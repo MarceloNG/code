@@ -55,7 +55,7 @@ class Batch:
         if self.can_allocate(line):
             self._allocations.add(line)
 
-    def dealocate(self, line: OrderLine):
+    def deallocate(self, line: OrderLine):
         if line in self._allocations:
             self._allocations.remove(line)
 
