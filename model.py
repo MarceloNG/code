@@ -4,7 +4,7 @@ from typing import List, Optional, NewType
 
 Quantity = NewType("Quantity", int)
 Sku = NewType("Sku", str)
-Reference = NewType("Reference", str)
+BatchReference = NewType("Reference", str)
 
 
 @dataclass(unsafe_hash=True)
@@ -15,7 +15,7 @@ class OrderLine:
 
 
 class Batch:
-    def __init__(self, ref: Reference, sku: Sku, qty: Quantity, eta: Optional[date]):
+    def __init__(self, ref: BatchReference, sku: Sku, qty: Quantity, eta: Optional[date]):
         self.reference = ref
         self.sku = sku
         self.eta = eta

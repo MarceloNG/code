@@ -1,12 +1,12 @@
 from sqlalchemy.orm.session import Session
 
-from model import Batch, Reference, OrderLine
-from repository import SqlAlchemyRepository
+from model import Batch, BatchReference, OrderLine
+from repository import RawSqlRepository
 
 def test_repository_can_save_a_batch(session: Session):
     batch = Batch("batch1", 'FOGÃO ENFERRUJADO', 100, eta=None)
 
-    repo = SqlAlchemyRepository(session)
+    repo = RawSqlRepository(session)
     repo.add(batch)
     session.commit()
 
@@ -26,7 +26,7 @@ def insert_order_line(session: Session) -> int:
     )
     return orderline_id
 
-def insert_batch(session: Session, batch_reference: Reference) -> int:
+def insert_batch(session: Session, batch_reference: BatchReference) -> int:
     session.execute(
         "INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
         ' VALUES (:batch_reference, "FOGÃO-ENFERRUJADO", 100, null)',
@@ -51,7 +51,7 @@ def test_repository_can_retrieve_a_batch_with_allocations(session: Session):
     insert_batch(session, "batch2")
     insert_allocation(session, orderline_id, batch1_id)
 
-    repo = SqlAlchemyRepository(session)
+    repo = RawSqlRepository(session)
     retrieved_batch = repo.get("batch1")
 
     expected = Batch("batch1", "FOGÃO-ENFERRUJADO", 100, eta=None)
@@ -61,3 +61,4 @@ def test_repository_can_retrieve_a_batch_with_allocations(session: Session):
     assert retrieved_batch._allocations == {
         OrderLine("order1", "FOGÃO-ENFERRUJADO", 12)
     }
+    
