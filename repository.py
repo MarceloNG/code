@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from sqlalchemy.orm.session import Session
 
-from model import Batch, OrderLine
+from model import Batch, OrderLine, BatchReference
 
 
 class AbstractRepository(ABC):
@@ -17,6 +18,7 @@ class AbstractRepository(ABC):
 
 
 class SqlAlchemyRepository(AbstractRepository):
+
     def __init__(self, session: Session) -> None:
         self.session = session
 
@@ -31,6 +33,7 @@ class SqlAlchemyRepository(AbstractRepository):
         
 
 class RawSqlRepository(AbstractRepository):
+
     def __init__(self, session) -> None:
         self.session = session
 
@@ -69,3 +72,18 @@ class RawSqlRepository(AbstractRepository):
  
         return batch
     
+
+class FakeRepository(AbstractRepository):
+
+    def __init__(self, batches: List[Batch]):
+        self._batches = set(batches)
+
+    def add(self, batch: Batch):
+        self._batches.add(batch)
+
+    def get(self, reference: BatchReference):
+        return next(b for b in self._batches if b.reference == reference)
+    
+    def list(self):
+        return list(self._batches)
+        
